@@ -1,5 +1,6 @@
 package me.dri.model.dao.impl;
 
+import com.mysql.cj.protocol.a.NativeUtils;
 import me.dri.db.Db;
 import me.dri.exceptions.DbExcepetion;
 import me.dri.model.dao.SellerDao;
@@ -7,10 +8,7 @@ import me.dri.model.entities.Department;
 import me.dri.model.entities.Seller;
 
 import javax.xml.transform.Result;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +23,39 @@ public class SellerDaoJDBC implements SellerDao {
     }
     @Override
     public void insert(Seller obj) {
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement("INSERT INTO seller " +
+                    "(Name, Email, BirthDate, BaseSalary, DepartmentId) " +
+                    "VALUES" +
+                    "(?, ?, ?, ?, ?)" ,
+                    Statement.RETURN_GENERATED_KEYS);
+
+            st.setString(1, obj.getName());
+            st.setString(2, obj.getEmail());
+            st.setDate(3, new Date(obj.getBirthDate().getTime()));
+            st.setDouble(4, obj.getBaseSalary());
+            st.setInt(5, obj.getDepartment().getId());
+
+            int rowsAffected = st.executeUpdate();
+            if (rowsAffected > 0 ) {
+                ResultSet rs = st.getGeneratedKeys();
+                if (rs.next()) {
+                    int id = rs.getInt(1);
+                    obj.setId(id);
+                }
+                Db.closeResult(rs);
+            }
+            else {
+                throw new DbExcepetion("Unexpected error! No rows affected!");
+            }
+        }
+        catch (SQLException e) {
+            throw new DbExcepetion(e.getMessage());
+        }
+        finally {
+            Db.closeStatement(st);
+        }
 
     }
 
