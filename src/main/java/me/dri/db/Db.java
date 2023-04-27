@@ -10,14 +10,14 @@ import java.util.Properties;
 public class Db {
 
     private static Connection conn = null;
+
     public static Properties loadProperties() {
 
         try (FileInputStream fs = new FileInputStream("db.properties")) {
             Properties props = new Properties();
             props.load(fs);
             return props;
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new DbExcepetion("Erro ao ler o arquivo db.properties, causa: " + e.getMessage());
         }
     }
@@ -31,10 +31,9 @@ public class Db {
                 Properties props = loadProperties();
                 String url = props.getProperty("dburl");
                 conn = DriverManager.getConnection(url, props);
-            }
-            catch (SQLException e) {
+            } catch (SQLException e) {
                 throw new DbExcepetion("Erro ao tenta estabelecer uma conexão com o banco de dados, causa: "
-                + e.getMessage());
+                        + e.getMessage());
             }
         }
         return conn;
@@ -48,8 +47,7 @@ public class Db {
             try {
                 conn.close();
                 System.out.println("Conexão desligada!");
-            }
-            catch (SQLException e) {
+            } catch (SQLException e) {
                 throw new DbExcepetion("Erro ao tentar desligar a conexão com o banco de dados, causa: "
                         + e.getMessage());
             }
@@ -58,20 +56,23 @@ public class Db {
     }
 
     public static void closeStatement(Statement st) {
-        try {
-            st.close();
-        }
-        catch (SQLException e) {
-            throw new DbExcepetion("Erro ao tentar finalizar statement, causa: " + e.getMessage());
+        if (st != null) {
+            try {
+                st.close();
+            } catch (SQLException e) {
+                throw new DbExcepetion("Erro ao tentar finalizar statement, causa: " + e.getMessage());
+            }
         }
     }
 
     public static void closeResult(ResultSet rs) {
-        try {
-            rs.close();
-        }
-        catch (SQLException e) {
-            throw new DbExcepetion("Erro ao tentar finalizar result, causa: " + e.getMessage());
+        if (rs != null) {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                throw new DbExcepetion("Erro ao tentar finalizar result, causa: " + e.getMessage());
+            }
         }
     }
 }
+
