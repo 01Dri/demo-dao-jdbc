@@ -5,12 +5,11 @@ import me.dri.model.dao.impl.DaoFactory;
 import me.dri.model.entities.Department;
 import me.dri.model.entities.Seller;
 
-import java.util.ArrayList;
+
 import java.util.Date;
 import java.util.List;
 
 public class Main {
-
 
     public static void main(String[] args) {
 
@@ -34,6 +33,12 @@ public class Main {
       Seller newSeller = new Seller(null, "Melanie" , "melanie@gmail.com" , new Date(), 4000.0 , dep);
       sellerDao.insert(newSeller);
       System.out.println("Inserted! New ID = " + newSeller.getId());
+
+      System.out.println("=== TEST 4: seller update ===");
+      seller = sellerDao.findByID(1);
+      seller.setName("Marta Waine");
+      sellerDao.update(seller);
+      System.out.println("Update completed!");
 
     }
 
